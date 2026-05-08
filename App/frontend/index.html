@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Material 3 PDF Workspace</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Variable:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .pdf-page-wrapper {
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: white;
+    }
+    .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; }
+    .markdown-body strong { color: #cfbcff; }
+    .screen { display: none; }
+    .screen.active { display: flex; }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed-variant": "#633b48",
+            "on-primary-fixed": "#22005d",
+            "secondary-fixed-dim": "#ccc2dc",
+            "tertiary-fixed-dim": "#eeb8c8",
+            "error": "#ffb4ab",
+            "surface-dim": "#141317",
+            "on-secondary": "#332d41",
+            "error-container": "#93000a",
+            "surface-tint": "#cfbcff",
+            "surface-bright": "#3a383d",
+            "primary-fixed": "#e9ddff",
+            "surface-variant": "#353438",
+            "on-secondary-container": "#bab1ca",
+            "on-primary": "#381e72",
+            "on-surface-variant": "#cbc4d2",
+            "surface-container": "#201f23",
+            "primary-container": "#6750a4",
+            "tertiary": "#eeb8c8",
+            "on-tertiary-fixed": "#31111d",
+            "primary": "#cfbcff",
+            "on-secondary-fixed": "#1e192b",
+            "on-background": "#e5e1e7",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#4a4358",
+            "secondary-container": "#4a4358",
+            "on-error-container": "#ffdad6",
+            "on-primary-container": "#e0d2ff",
+            "outline-variant": "#494551",
+            "secondary": "#ccc2dc",
+            "surface-container-lowest": "#0e0e11",
+            "tertiary-fixed": "#ffd9e3",
+            "surface": "#141317",
+            "on-tertiary-container": "#ffcbda",
+            "background": "#141317",
+            "inverse-primary": "#6750a4",
+            "secondary-fixed": "#e8def9",
+            "on-surface": "#e5e1e7",
+            "inverse-on-surface": "#313034",
+            "on-primary-fixed-variant": "#4f378a",
+            "surface-container-highest": "#353438",
+            "surface-container-low": "#1c1b1f",
+            "inverse-surface": "#e5e1e7",
+            "surface-container-high": "#2b292d",
+            "on-tertiary": "#492532",
+            "outline": "#948e9c",
+            "tertiary-container": "#7d5260",
+            "primary-fixed-dim": "#cfbcff"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "base": "4px",
+            "xl": "32px",
+            "md": "16px",
+            "sm": "8px",
+            "xs": "4px",
+            "lg": "24px",
+            "xxl": "48px",
+            "gutter": "16px",
+            "margin": "24px"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body-lg h-screen overflow-hidden flex flex-col">
+
+  <!-- ── Welcome Screen ─────────────────────────────────────────────────────── -->
+  <main id="welcome-screen" class="screen active min-h-screen flex items-center justify-center bg-surface-container-lowest">
+    <div class="w-full max-w-[800px] px-margin py-xxl flex flex-col items-center">
+      <header class="text-center mb-xl">
+        <h1 class="text-[32px] font-bold text-primary mb-sm">New Investigation</h1>
+        <p class="text-[16px] text-on-surface-variant">Configure your workspace sources to begin analysis.</p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter w-full mb-xl">
+        <button id="drop-zone" class="bg-surface-container hover:bg-surface-container-high transition-colors rounded-lg p-lg flex flex-col items-center justify-center gap-md border border-outline-variant hover:border-outline focus:outline-none focus:ring-2 focus:ring-primary h-[240px] group">
+          <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center group-hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-on-secondary-container group-hover:text-on-primary-container text-[32px]">picture_as_pdf</span>
+          </div>
+          <div class="text-center">
+            <h2 class="text-[22px] font-medium text-on-surface mb-xs">Select PDF</h2>
+            <p class="text-[16px] text-on-surface-variant" id="pdf-status-text">Upload primary research document</p>
+          </div>
+          <input type="file" id="pdf-file-input" accept=".pdf" class="hidden" />
+        </button>
+
+        <button id="sidecar-zone" class="bg-surface-container hover:bg-surface-container-high transition-colors rounded-lg p-lg flex flex-col items-center justify-center gap-md border border-outline-variant hover:border-outline focus:outline-none focus:ring-2 focus:ring-primary h-[240px] group">
+          <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center group-hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-on-secondary-container group-hover:text-on-primary-container text-[32px]">note_add</span>
+          </div>
+          <div class="text-center">
+            <h2 class="text-[22px] font-medium text-on-surface mb-xs">Attach Sidecar</h2>
+            <p class="text-[16px] text-on-surface-variant">Add supplementary data files</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="w-full bg-surface-container-low rounded-lg p-md flex items-center justify-between mb-xl">
+        <div class="flex flex-col">
+          <span class="text-[18px] text-on-surface">Auto-detect sidecar</span>
+          <span class="text-[14px] text-on-surface-variant">Automatically find matching metadata files</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input checked="" class="sr-only peer" type="checkbox" id="auto-detect-toggle"/>
+          <div class="w-14 h-8 bg-surface-container-highest peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-container rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-outline after:border-outline after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary peer-checked:after:bg-on-primary peer-checked:after:border-on-primary"></div>
+        </label>
+      </div>
+
+      <div id="welcome-error" class="text-error text-sm mb-4 hidden"></div>
+
+      <div class="w-full flex justify-center gap-md">
+        <div id="ollama-status" class="flex items-center gap-xs text-[12px] text-on-surface-variant">
+          <div class="status-dot w-2 h-2 rounded-full bg-error"></div>
+          <span>Checking Ollama...</span>
+        </div>
+        <button id="open-workspace-btn" disabled class="bg-primary text-on-primary font-medium px-xl py-md rounded-full hover:opacity-90 transition-opacity flex items-center gap-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          <span class="material-symbols-outlined text-[20px] filled">rocket_launch</span>
+          Open Workspace
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Reader Screen ──────────────────────────────────────────────────────── -->
+  <div id="reader-screen" class="screen flex-col h-screen overflow-hidden">
+    <!-- TopAppBar -->
+    <header class="bg-surface text-primary flex justify-between items-center w-full px-margin py-sm z-50 border-b border-outline-variant">
+      <div class="flex items-center gap-md">
+        <button id="back-btn" class="p-sm text-on-surface hover:bg-surface-container-high rounded-full transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="font-medium text-[22px] text-on-surface flex items-center gap-sm">
+          <span id="doc-title">Document.pdf</span>
+          <span id="cache-badge" class="bg-surface-container-highest text-on-surface-variant text-[14px] px-sm py-xs rounded-full ml-sm flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">check_circle</span>
+            JSON Cached
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-sm">
+        <button id="zoom-out-btn" class="p-sm text-on-surface-variant hover:bg-surface-container-high rounded-full">
+          <span class="material-symbols-outlined">zoom_out</span>
+        </button>
+        <span id="zoom-level" class="text-sm text-on-surface-variant w-12 text-center">100%</span>
+        <button id="zoom-in-btn" class="p-sm text-on-surface-variant hover:bg-surface-container-high rounded-full">
+          <span class="material-symbols-outlined">zoom_in</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Side Rail -->
+      <nav class="bg-surface-container-low h-full w-20 flex flex-col items-center pt-xxl gap-lg border-r border-outline-variant flex-shrink-0">
+        <button class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined filled">description</span>
+        </button>
+        <button class="w-12 h-12 text-on-surface-variant hover:bg-surface-container-highest rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined">article</span>
+        </button>
+        <button class="w-12 h-12 text-on-surface-variant hover:bg-surface-container-highest rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined">analytics</span>
+        </button>
+      </nav>
+
+      <!-- Main Workspace Area -->
+      <main class="flex-1 flex p-gutter gap-gutter overflow-hidden bg-background">
+        <!-- Left: PDF view -->
+        <section class="flex-[3] bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden flex flex-col relative">
+          <div class="sticky top-0 bg-surface-container border-b border-outline-variant p-sm flex justify-between items-center z-10">
+            <span id="page-indicator" class="text-[14px] text-on-surface pl-sm">Page 1 of —</span>
+            <div class="flex gap-xs">
+              <button class="p-xs text-on-surface-variant hover:bg-surface-container-highest rounded-full"><span class="material-symbols-outlined">search</span></button>
+              <button class="p-xs text-on-surface-variant hover:bg-surface-container-highest rounded-full"><span class="material-symbols-outlined">bookmark</span></button>
+            </div>
+          </div>
+          <div id="pdf-viewport" class="flex-1 overflow-auto p-xl flex flex-col items-center">
+            <div id="pdf-container" class="max-w-3xl w-full"></div>
+          </div>
+        </section>
+
+        <!-- Right: Summary Panel -->
+        <section id="summary-panel" class="flex-[2] flex flex-col h-full overflow-hidden">
+          <div class="bg-surface-container-high rounded-lg flex flex-col h-full shadow-lg relative overflow-hidden">
+            <!-- Header -->
+            <div class="p-margin border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-highest">
+              <div class="flex items-center gap-sm">
+                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                <h3 class="text-[22px] text-on-surface font-medium">Active Summary</h3>
+              </div>
+              <span id="summary-pages-badge" class="bg-primary-container text-on-primary-container text-[14px] px-sm py-xs rounded-full">Section —</span>
+            </div>
+
+            <!-- Content Area -->
+            <div id="summary-scroll-area" class="flex-1 overflow-y-auto p-margin flex flex-col gap-md">
+              <div id="summary-idle" class="h-full flex flex-col items-center justify-center text-center opacity-50 gap-md">
+                <span class="material-symbols-outlined text-6xl">hourglass_empty</span>
+                <p>Scroll the PDF to generate summaries.</p>
+              </div>
+
+              <div id="summary-loading" class="hidden h-full flex flex-col items-center justify-center gap-md">
+                <div class="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                <p class="text-primary font-medium">Summarizing with <span id="model-name-loading">Ollama</span>...</p>
+              </div>
+
+              <div id="summary-content" class="hidden markdown-body text-on-surface-variant text-[16px] leading-relaxed"></div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div id="summary-actions" class="hidden p-md border-t border-outline-variant/30 bg-surface-container-highest flex gap-sm flex-wrap items-center">
+              <button id="btn-regenerate" class="bg-primary text-on-primary text-[14px] px-lg py-sm rounded-full flex items-center gap-sm hover:opacity-90 transition-opacity">
+                <span class="material-symbols-outlined text-[18px]">refresh</span>
+                Regenerate
+              </button>
+              <button id="btn-detail" class="bg-surface-container text-on-surface text-[14px] px-lg py-sm rounded-full border border-outline-variant hover:bg-surface-container-high transition-colors flex items-center gap-sm">
+                <span class="material-symbols-outlined text-[18px]">psychology</span>
+                Explain more
+              </button>
+              <div class="flex-1"></div>
+              <button id="btn-delete" class="text-error hover:bg-error-container/20 p-sm rounded-full transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+
+            <!-- Deleted Overlay -->
+            <div id="summary-deleted" class="hidden h-full flex flex-col items-center justify-center text-center gap-md p-xl">
+              <span class="text-4xl">🗑️</span>
+              <p class="text-on-surface-variant">This summary was deleted.</p>
+              <button id="btn-restore" class="bg-secondary-container text-on-secondary-container px-lg py-sm rounded-full hover:opacity-90 transition-opacity">Regenerate Summary</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Detail Expansion Panel -->
+  <div id="detail-panel" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-xxl bg-black/40 backdrop-blur-sm">
+    <div class="bg-surface-container-high w-full max-w-4xl max-h-full rounded-lg shadow-2xl flex flex-col border border-outline-variant">
+      <div class="p-margin border-b border-outline-variant flex justify-between items-center bg-surface-container-highest">
+        <h3 class="text-[22px] font-medium">Detailed Explanation</h3>
+        <button id="btn-close-detail" class="p-sm hover:bg-surface-container rounded-full transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="detail-content" class="flex-1 overflow-y-auto p-margin markdown-body text-on-surface-variant"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="static/pdfjs/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'static/pdfjs/pdf.worker.min.js';
+  </script>
+  <script src="static/js/markdown.js"></script>
+  <script src="static/js/app.js"></script>
+</body>
+</html>

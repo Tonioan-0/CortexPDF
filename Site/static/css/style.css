@@ -1,0 +1,114 @@
+/* ── Material 3 / Stitch Design System ── */
+
+:root {
+  --primary: #cfbcff;
+  --on-primary: #381e72;
+  --primary-container: #6750a4;
+  --on-primary-container: #e0d2ff;
+  --surface: #141317;
+  --on-surface: #e5e1e7;
+  --surface-container-lowest: #0e0e11;
+  --surface-container-low: #1c1b1f;
+  --surface-container: #201f23;
+  --surface-container-high: #2b292d;
+  --surface-container-highest: #353438;
+  --outline: #948e9c;
+  --outline-variant: #494551;
+  --error: #ffb4ab;
+}
+
+body {
+  font-family: 'Inter Variable', sans-serif;
+  background-color: var(--surface-container-lowest);
+  color: var(--on-surface);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Custom Scrollbars for Material 3 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-container-highest);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--outline);
+}
+
+/* PDF Page Styling */
+.pdf-page-wrapper {
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border-radius: 4px;
+  background: white;
+  transition: transform 0.2s ease;
+}
+
+.pdf-page-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+/* Markdown Styling for Summary */
+.markdown-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  color: var(--primary);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.markdown-body p {
+  margin-bottom: 1rem;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.markdown-body code {
+  background: var(--surface-container-highest);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.markdown-body pre {
+  background: var(--surface-container-lowest);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid var(--outline-variant);
+}
