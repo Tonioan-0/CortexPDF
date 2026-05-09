@@ -358,7 +358,10 @@
 
                 <!-- API Key -->
                 <div id="api-key-container" class="flex flex-col gap-xs">
-                    <label class="text-label-large text-primary ml-1">API Key</label>
+                    <div class="flex justify-between items-center">
+                        <label class="text-label-large text-primary ml-1">API Key</label>
+                        <a href="apikey-guide.html" target="_blank" class="text-xs text-primary hover:underline">How to get an API key?</a>
+                    </div>
                     <div class="relative">
                         <input type="password" id="ai-api-key" placeholder="••••••••••••••••"
                             class="bg-[#201f23] text-on-surface rounded-xl border border-outline-variant p-md pr-xl focus:ring-2 focus:ring-primary focus:border-primary w-full">
@@ -374,7 +377,7 @@
                 <!-- Base URL (Optional/Conditional) -->
                 <div id="base-url-container" class="flex flex-col gap-xs">
                     <label class="text-label-large text-primary ml-1">Base URL (Ollama)</label>
-                    <input type="text" id="ai-base-url" placeholder="http://localhost:11434"
+                    <input type="text" id="ai-base-url" placeholder="https://your-remote-ollama.com"
                         class="bg-[#201f23] text-on-surface rounded-xl border border-outline-variant p-md focus:ring-2 focus:ring-primary focus:border-primary w-full">
                 </div>
 
@@ -423,13 +426,15 @@
 
     <!-- Launch Screen -->
     <main id="launch-screen"
-        class="screen active bg-surface-container-lowest text-on-surface min-h-screen items-center justify-center font-body-lg w-full relative">
-        <div class="w-full max-w-[800px] px-margin py-xxl flex flex-col items-center">
+        class="screen active bg-surface-container-lowest text-on-surface h-full overflow-y-auto font-body-lg w-full relative flex-col">
+        <div class="w-full max-w-[800px] px-margin py-xxl flex flex-col items-center m-auto">
             <header class="text-center mb-xl">
                 <h1 class="font-headline-lg text-headline-lg font-bold text-primary mb-sm">CortexPDF</h1>
                 <p class="font-body-lg text-body-lg text-on-surface-variant">Configure your workspace sources to begin
                     analysis.</p>
             </header>
+
+
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter w-full mb-xl">
                 <!-- PDF Selection -->
@@ -489,8 +494,10 @@
                             class="bg-surface-container text-on-surface rounded-lg border border-outline-variant p-sm focus:ring-2 focus:ring-primary focus:outline-none w-full text-sm">
                     </div>
                     <div class="flex flex-col gap-xs" id="inline-api-key-container">
-                        <label class="font-label-lg text-on-surface-variant text-xs" id="inline-api-key-label">API
-                            Key</label>
+                        <div class="flex justify-between items-center">
+                            <label class="font-label-lg text-on-surface-variant text-xs" id="inline-api-key-label">API Key</label>
+                            <a href="apikey-guide.html" target="_blank" class="text-[10px] text-primary hover:underline">How to get one?</a>
+                        </div>
                         <input type="password" id="inline-ai-api-key" placeholder="••••••••"
                             class="bg-surface-container text-on-surface rounded-lg border border-outline-variant p-sm focus:ring-2 focus:ring-primary focus:outline-none w-full text-sm">
                     </div>
@@ -527,18 +534,35 @@
                 </p>
             </div>
 
-            <div class="w-full flex justify-center mt-xl">
+            <div class="w-full flex justify-center mt-xl mb-xl">
                 <button id="btn-open-workspace" disabled
                     class="bg-primary text-on-primary font-label-lg text-label-lg px-xl py-md rounded-full hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:ring-offset-2 focus:ring-offset-surface-container-lowest flex items-center gap-sm disabled:opacity-50 disabled:cursor-not-allowed">
                     <span class="material-symbols-outlined text-[20px] filled">rocket_launch</span>
                     Open Workspace
                 </button>
             </div>
+
+            <!-- Desktop App Banner -->
+            <div class="w-full bg-surface-container border border-outline-variant/50 rounded-2xl p-md sm:p-lg flex flex-col sm:flex-row items-center justify-between gap-md text-left shadow-sm">
+                <div class="flex items-start sm:items-center gap-md">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1 sm:mt-0">
+                        <span class="material-symbols-outlined text-primary">desktop_windows</span>
+                    </div>
+                    <div>
+                        <h3 class="font-title-md font-medium text-on-surface mb-xs">Looking for the Desktop App?</h3>
+                        <p class="font-body-sm text-on-surface-variant leading-snug">Connect to your local Ollama without CORS limitations and permanently save all your research summaries to your local drive.</p>
+                    </div>
+                </div>
+                <button disabled class="flex-shrink-0 w-full sm:w-auto bg-surface-container-highest text-on-surface-variant border border-outline-variant px-lg py-sm rounded-full font-label-lg font-medium cursor-not-allowed opacity-80 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">construction</span>
+                    Under Construction
+                </button>
+            </div>
         </div>
 
         <!-- Footer -->
         <footer
-            class="absolute bottom-margin left-margin right-margin flex justify-between items-center text-on-surface-variant text-xs opacity-60">
+            class="w-full px-margin pb-margin flex flex-col sm:flex-row justify-between items-center text-on-surface-variant text-xs opacity-60 shrink-0 gap-sm">
             <div class="flex items-center gap-xs">
                 <span>&copy; 2026 Antonio D'Ambrosio</span>
                 <span class="mx-xs">&bull;</span>
@@ -556,19 +580,14 @@
     <div id="workspace-screen" class="screen flex-col h-screen overflow-hidden w-full">
         <!-- TopAppBar -->
         <header
-            class="bg-surface text-primary flex justify-between items-center w-full px-margin py-sm z-50 border-b border-outline-variant">
+            class="bg-surface text-primary flex flex-row justify-between items-center w-full px-margin py-sm z-50 border-b border-outline-variant gap-sm flex-shrink-0">
             <div class="flex items-center gap-md">
                 <button id="btn-back"
                     class="p-sm text-on-surface hover:bg-surface-container-high rounded-full transition-colors flex items-center">
                     <span class="material-symbols-outlined">arrow_back</span>
                 </button>
-                <div class="font-title-lg text-title-lg font-medium text-on-surface flex items-center gap-sm">
+                <div class="hidden sm:flex font-title-lg text-title-lg font-medium text-on-surface items-center gap-sm">
                     <span id="doc-title">Document.pdf</span>
-                    <span
-                        class="bg-surface-container-highest text-on-surface-variant font-label-lg text-label-lg px-sm py-xs rounded-full ml-sm flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                        Analysis Active
-                    </span>
                 </div>
             </div>
             <div class="flex items-center gap-sm">
@@ -584,13 +603,13 @@
 
         <div class="flex flex-1 overflow-hidden">
             <!-- Main Workspace Area -->
-            <main class="flex-1 flex w-full h-full p-gutter gap-gutter overflow-hidden bg-background">
+            <main class="flex-1 flex flex-col lg:flex-row w-full h-full p-gutter gap-gutter overflow-y-auto lg:overflow-hidden bg-background">
                 <!-- Left: PDF view -->
                 <section
-                    class="flex-[3] bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden flex flex-col relative">
+                    class="flex-none lg:flex-[3] bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden flex flex-col relative h-[60vh] lg:h-full lg:min-h-0">
                     <!-- PDF Toolbar -->
                     <div
-                        class="bg-surface-container border-b border-outline-variant px-sm py-xs flex justify-between items-center z-10 flex-shrink-0">
+                        class="bg-surface-container border-b border-outline-variant px-sm py-xs flex flex-wrap justify-between items-center z-10 flex-shrink-0 gap-2">
                         <div class="flex items-center gap-xs">
                             <div class="flex items-center gap-xs">
                                 <button id="btn-page-prev"
@@ -641,7 +660,7 @@
                 </section>
 
                 <!-- Right: Summary Panel -->
-                <section id="summary-panel" class="flex-[2] flex flex-col h-full overflow-hidden">
+                <section id="summary-panel" class="flex-none lg:flex-[2] flex flex-col overflow-hidden h-[60vh] lg:h-full lg:min-h-0">
                     <div
                         class="bg-[#2d2d30] rounded-3xl flex flex-col h-full shadow-2xl relative overflow-hidden border border-white/5">
 
@@ -649,13 +668,27 @@
                         <div class="px-xl pt-xl pb-md flex justify-between items-center">
                             <div class="flex items-center gap-sm">
                                 <span class="material-symbols-outlined text-[#cfbcff] text-[28px] filled">book</span>
-                                <h3 class="serif-font text-[28px] text-white font-medium">Summary</h3>
+                                <h3 class="serif-font text-[28px] text-white font-medium hidden sm:block">Summary</h3>
                             </div>
-                            <button id="btn-download-md"
-                                class="bg-[#6b4fa3] hover:bg-[#7e62b8] text-white px-lg py-2 rounded-full flex items-center gap-xs transition-all shadow-md active:scale-95 text-sm font-medium">
-                                <span class="material-symbols-outlined text-[18px]">download</span>
-                                Markdown
-                            </button>
+                            <div class="flex items-center gap-md">
+                                <label class="flex items-center gap-2 cursor-pointer" title="Auto-generate summaries while scrolling">
+                                    <div class="relative">
+                                        <input type="checkbox" id="toggle-auto-generate" class="sr-only" checked>
+                                        <div class="toggle-bg block bg-white/20 w-10 h-6 rounded-full transition-colors"></div>
+                                        <div class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></div>
+                                    </div>
+                                    <span class="text-xs text-white/60 font-medium">Auto</span>
+                                </label>
+                                <style>
+                                    input:checked ~ .toggle-bg { background-color: #cfbcff; }
+                                    input:checked ~ .toggle-dot { transform: translateX(100%); background-color: #2d2d30; }
+                                </style>
+                                <button id="btn-download-md"
+                                    class="bg-[#6b4fa3] hover:bg-[#7e62b8] text-white px-lg py-2 rounded-full flex items-center gap-xs transition-all shadow-md active:scale-95 text-sm font-medium">
+                                    <span class="material-symbols-outlined text-[18px]">download</span>
+                                    <span class="hidden sm:inline">Markdown</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Tab Bar (Image Style) -->
@@ -707,6 +740,19 @@
                             </div>
                         </div>
 
+                        <!-- Manual Generation State -->
+                        <div id="summary-manual" class="flex-1 flex flex-col items-center justify-center p-xl text-center hidden relative z-10">
+                            <div class="w-16 h-16 rounded-full bg-[#cfbcff]/10 flex items-center justify-center mb-md border border-[#cfbcff]/20">
+                                <span class="material-symbols-outlined text-[#cfbcff] text-[32px]">model_training</span>
+                            </div>
+                            <h4 class="text-white font-medium mb-xs text-lg">Analysis Paused</h4>
+                            <p class="text-white/50 text-sm mb-lg max-w-[250px] leading-relaxed">Auto-generation is disabled. Click below to analyze this section.</p>
+                            <button id="btn-manual-generate" class="bg-[#cfbcff] hover:bg-white text-black px-xl py-3 rounded-full font-medium transition-colors shadow-lg active:scale-95 flex items-center gap-sm">
+                                <span class="material-symbols-outlined text-[20px]">bolt</span>
+                                Generate Now
+                            </button>
+                        </div>
+
                         <!-- Library View Tab -->
                         <div id="library-view" class="flex flex-col h-full hidden">
                             <div id="library-list" class="flex-1 overflow-y-auto p-xl flex flex-col gap-md">
@@ -724,6 +770,19 @@
                             class="flex flex-col h-full items-center justify-center text-center opacity-50 gap-md">
                             <span class="material-symbols-outlined text-6xl">hourglass_empty</span>
                             <p>Scroll the PDF to generate summaries.</p>
+                        </div>
+
+                        <!-- Manual Generation State -->
+                        <div id="summary-manual" class="flex-1 flex flex-col items-center justify-center p-xl text-center hidden relative z-10">
+                            <div class="w-16 h-16 rounded-full bg-[#cfbcff]/10 flex items-center justify-center mb-md border border-[#cfbcff]/20 mx-auto">
+                                <span class="material-symbols-outlined text-[#cfbcff] text-[32px]">model_training</span>
+                            </div>
+                            <h4 class="text-white font-medium mb-xs text-lg">Analysis Paused</h4>
+                            <p class="text-white/50 text-sm mb-lg max-w-[250px] leading-relaxed mx-auto">Auto-generation is disabled. Click below to analyze this section.</p>
+                            <button id="btn-manual-generate" class="bg-[#cfbcff] hover:bg-white text-black px-xl py-3 rounded-full font-medium transition-colors shadow-lg active:scale-95 flex items-center justify-center gap-sm mx-auto">
+                                <span class="material-symbols-outlined text-[20px]">bolt</span>
+                                Generate Now
+                            </button>
                         </div>
 
                         <!-- Deleted View (Summary Hidden) -->
@@ -770,6 +829,30 @@
                 </section>
             </main>
         </div>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div id="explanation-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-surface-container rounded-2xl shadow-2xl border border-outline-variant w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden mx-margin">
+            <div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface">
+                <div class="flex items-center gap-sm">
+                    <span class="material-symbols-outlined text-primary">psychology</span>
+                    <h3 class="font-title-lg text-title-lg text-on-surface">Explanation</h3>
+                </div>
+                <button id="btn-close-explanation" class="text-on-surface-variant hover:text-on-surface p-xs rounded-full hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="explanation-content" class="p-xl overflow-y-auto font-body-lg text-on-surface text-base leading-relaxed markdown-body">
+                <!-- content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Selection Tooltip Button -->
+    <div id="selection-tooltip" class="fixed z-[90] hidden bg-primary text-on-primary rounded-full shadow-xl cursor-pointer hover:bg-primary/90 transition-colors px-4 py-2 flex items-center gap-2 transform -translate-x-1/2 -translate-y-[150%] whitespace-nowrap font-medium text-sm">
+        <span class="material-symbols-outlined text-[16px]">help</span>
+        Explain Text
     </div>
 
     <!-- Scripts -->

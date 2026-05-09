@@ -9,7 +9,7 @@ class AIClient {
         this.provider = localStorage.getItem('ai_provider') || 'ollama';
         this.apiKey = ''; // ALWAYS empty on start — session only, never saved
         this.model = localStorage.getItem('ai_model') || 'llama3';
-        this.baseUrl = localStorage.getItem('ai_base_url') || 'http://localhost:11434';
+        this.baseUrl = localStorage.getItem('ai_base_url') || 'https://your-remote-ollama.com';
         this.language = localStorage.getItem('ai_language') || 'en';
         this.timeoutMs = 120_000; // 2 minute timeout for all requests
     }
@@ -72,7 +72,7 @@ class AIClient {
         }
 
         const model = this.model || 'llama3';
-        const baseUrl = this.baseUrl || 'http://localhost:11434';
+        const baseUrl = this.baseUrl || 'https://your-remote-ollama.com';
 
         // Use /api/chat (recommended for instruction-tuned models)
         const res = await this._fetchWithTimeout(`${baseUrl}/api/chat`, {
@@ -284,11 +284,12 @@ class AIClient {
             if (err.name === 'AbortError') {
                 throw new Error(`Request timed out after ${this.timeoutMs / 1000}s. Is the AI service running?`);
             }
-            // Improve error message for common network failures
             if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
                 const isLocal = url.includes('localhost') || url.includes('127.0.0.1');
                 if (isLocal) {
-                    throw new Error(`Cannot connect to local AI server at ${this.baseUrl}. Is Ollama running? (Tip: set OLLAMA_ORIGINS=* and restart Ollama)`);
+                    throw new Error(`Cannot connect to local AI server at ${this.baseUrl}. Local instances often fail due to browser CORS policies. Please use a remote instance (e.g., via ngrok).`);
+                } else {
+                    throw new Error(`Cannot connect to AI server at ${this.baseUrl}. Is the remote server running and allowing CORS?`);
                 }
             }
             throw err;

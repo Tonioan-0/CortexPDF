@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CortexPDF - API Key Guide</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#cfbcff",
+                        "on-primary": "#381e72",
+                        "surface": "#141317",
+                        "on-surface": "#e5e1e7",
+                        "surface-container": "#201f23",
+                        "surface-container-high": "#2b292d",
+                        "outline-variant": "#494551",
+                        "on-surface-variant": "#cbc4d2",
+                    },
+                    fontFamily: {
+                        "body": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #121212; }
+    </style>
+</head>
+<body class="bg-[#141317] text-[#e5e1e7] min-h-screen p-4 md:p-8 flex flex-col items-center">
+    <div class="max-w-3xl w-full">
+        <header class="flex items-center gap-4 mb-8 pb-4 border-b border-[#494551]">
+            <a href="index.html" class="p-2 hover:bg-[#201f23] rounded-full transition-colors flex items-center text-[#e5e1e7]">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-[#cfbcff]">How to Get an API Key</h1>
+                <p class="text-[#cbc4d2] mt-1">A guide to finding or creating API keys for CortexPDF supported AI providers.</p>
+            </div>
+        </header>
+
+        <div class="grid gap-6">
+            <!-- Gemini -->
+            <section class="bg-[#201f23] rounded-2xl p-6 border border-[#494551] shadow-lg transition-transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-[#cfbcff] text-3xl">psychology</span>
+                    <h2 class="text-2xl font-semibold">Google Gemini</h2>
+                </div>
+                <ol class="list-decimal list-inside space-y-3 text-[#cbc4d2]">
+                    <li>Go to Google AI Studio at <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[#cfbcff] hover:text-white hover:underline transition-colors">aistudio.google.com/app/apikey</a>.</li>
+                    <li>Sign in with your Google account.</li>
+                    <li>Click on the <strong>"Create API key"</strong> button.</li>
+                    <li>Copy the generated key and paste it into CortexPDF.</li>
+                </ol>
+            </section>
+
+            <!-- OpenAI -->
+            <section class="bg-[#201f23] rounded-2xl p-6 border border-[#494551] shadow-lg transition-transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-[#cfbcff] text-3xl">chat</span>
+                    <h2 class="text-2xl font-semibold">OpenAI (ChatGPT)</h2>
+                </div>
+                <ol class="list-decimal list-inside space-y-3 text-[#cbc4d2]">
+                    <li>Go to the OpenAI Platform at <a href="https://platform.openai.com/api-keys" target="_blank" class="text-[#cfbcff] hover:text-white hover:underline transition-colors">platform.openai.com/api-keys</a>.</li>
+                    <li>Log in or create an account.</li>
+                    <li>Click on <strong>"Create new secret key"</strong>.</li>
+                    <li>Give it a name, create it, and copy the key immediately (you won't be able to see it again).</li>
+                </ol>
+            </section>
+
+            <!-- Anthropic Claude -->
+            <section class="bg-[#201f23] rounded-2xl p-6 border border-[#494551] shadow-lg transition-transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-[#cfbcff] text-3xl">smart_toy</span>
+                    <h2 class="text-2xl font-semibold">Anthropic Claude</h2>
+                </div>
+                <ol class="list-decimal list-inside space-y-3 text-[#cbc4d2]">
+                    <li>Visit the Anthropic Console at <a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-[#cfbcff] hover:text-white hover:underline transition-colors">console.anthropic.com/settings/keys</a>.</li>
+                    <li>Sign in or create an account.</li>
+                    <li>Click <strong>"Create Key"</strong>.</li>
+                    <li>Copy the key for use in the application.</li>
+                </ol>
+            </section>
+
+            <!-- xAI Grok -->
+            <section class="bg-[#201f23] rounded-2xl p-6 border border-[#494551] shadow-lg transition-transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-[#cfbcff] text-3xl">rocket_launch</span>
+                    <h2 class="text-2xl font-semibold">xAI Grok</h2>
+                </div>
+                <ol class="list-decimal list-inside space-y-3 text-[#cbc4d2]">
+                    <li>Go to the xAI API Console at <a href="https://console.x.ai/" target="_blank" class="text-[#cfbcff] hover:text-white hover:underline transition-colors">console.x.ai</a>.</li>
+                    <li>Sign in to your account.</li>
+                    <li>Navigate to the API Keys section and create a new key.</li>
+                </ol>
+            </section>
+            
+            <!-- Ollama -->
+            <section class="bg-[#201f23] rounded-2xl p-6 border border-[#494551] shadow-lg transition-transform hover:-translate-y-1">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-[#cfbcff] text-3xl">terminal</span>
+                    <h2 class="text-2xl font-semibold">Ollama</h2>
+                </div>
+                <p class="text-[#cbc4d2] mb-3">
+                    Ollama does not require an API key, but due to CORS restrictions on web applications, you must use a remote or publicly exposed instance (e.g. via ngrok) rather than localhost.
+                </p>
+                <ol class="list-decimal list-inside space-y-3 text-[#cbc4d2]">
+                    <li>Host Ollama remotely or expose your local instance securely using tools like ngrok.</li>
+                    <li>Ensure the instance allows Cross-Origin Resource Sharing (CORS) from this domain.</li>
+                    <li>In CortexPDF, leave the API key blank and enter your remote URL (e.g. <code class="bg-[#141317] px-2 py-1 rounded text-[#cfbcff]">https://your-ngrok-url.app</code>) as the Base URL.</li>
+                </ol>
+            </section>
+        </div>
+
+        <footer class="mt-8 pt-6 pb-4 border-t border-[#494551] text-center text-sm text-[#cbc4d2] opacity-80 flex flex-col items-center gap-2">
+            <span class="material-symbols-outlined text-2xl">security</span>
+            <p><strong>Security Reminder:</strong> API keys you enter in CortexPDF are stored only in your browser's memory and are never sent to our servers or saved permanently.</p>
+        </footer>
+    </div>
+</body>
+</html>

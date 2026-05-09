@@ -17,6 +17,7 @@ const state = {
     currentTab: 'active', // 'active' or 'library'
     isEditing: false,
     darkMode: false,
+    autoGenerate: true,
 };
 
 // ── DOM refs ──────────────────────────────────────────────────────────────
@@ -84,7 +85,16 @@ const ui = {
     libraryView:   document.getElementById('library-view'),
     libraryList:   document.getElementById('library-list'),
     summaryEditor: document.getElementById('summary-editor'),
-    btnToggleEdit: document.getElementById('btn-toggle-edit')
+    btnToggleEdit: document.getElementById('btn-toggle-edit'),
+    
+    // Manual + Text Explain
+    toggleAutoGenerate: document.getElementById('toggle-auto-generate'),
+    summaryManual: document.getElementById('summary-manual'),
+    btnManualGenerate: document.getElementById('btn-manual-generate'),
+    explanationModal: document.getElementById('explanation-modal'),
+    explanationContent: document.getElementById('explanation-content'),
+    btnCloseExplanation: document.getElementById('btn-close-explanation'),
+    selectionTooltip: document.getElementById('selection-tooltip')
 };
 
 // ── Init ──────────────────────────────────────────────────────────────────
@@ -406,6 +416,83 @@ function bindEvents() {
         state.isEditing = !state.isEditing;
         updateEditorVisibility();
     });
+
+    // Auto-generate toggle
+    if (ui.toggleAutoGenerate) {
+        ui.toggleAutoGenerate.addEventListener('change', (e) => {
+            state.autoGenerate = e.target.checked;
+            if (state.autoGenerate && state.lastVisiblePages.length > 0) {
+                triggerSummarize(); // generate immediately if turned on
+            }
+        });
+    }
+
+    if (ui.btnManualGenerate) {
+        ui.btnManualGenerate.addEventListener('click', () => triggerSummarize(true));
+    }
+
+    // Text Selection Explanation
+    document.addEventListener('selectionchange', () => {
+        if (!ui.workspaceScreen.classList.contains('active') || !ui.selectionTooltip) return;
+        
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        
+        if (text.length > 5 && selection.rangeCount > 0) {
+            let node = selection.anchorNode;
+            let inPdf = false;
+            while(node) {
+                if (node.id === 'pdf-viewport') { inPdf = true; break; }
+                node = node.parentNode;
+            }
+            
+            if (inPdf) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                ui.selectionTooltip.style.left = (rect.left + rect.width / 2) + 'px';
+                ui.selectionTooltip.style.top = (rect.top - 5) + 'px';
+                ui.selectionTooltip.classList.remove('hidden');
+                ui.selectionTooltip.dataset.text = text;
+                return;
+            }
+        }
+        ui.selectionTooltip.classList.add('hidden');
+    });
+
+    if (ui.selectionTooltip) {
+        ui.selectionTooltip.addEventListener('mousedown', async function(e) {
+            e.preventDefault(); // Prevent text selection from clearing immediately
+            e.stopPropagation();
+            
+            const text = this.dataset.text;
+            this.classList.add('hidden');
+            window.getSelection().removeAllRanges();
+            
+            ui.explanationModal.classList.remove('hidden');
+            setTimeout(() => ui.explanationModal.classList.remove('opacity-0'), 10);
+            
+            ui.explanationContent.innerHTML = `<div class="flex flex-col items-center justify-center p-xl gap-md text-on-surface-variant">
+                <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <p>Analyzing selection with <strong class="text-primary">${window.aiClient ? window.aiClient.provider : 'AI'}</strong>…</p>
+            </div>`;
+            
+            try {
+                const prompt = `Please explain the following text from a document in clear, concise terms:\n\n"${text}"`;
+                const explanation = await window.aiClient.summarize(prompt);
+                ui.explanationContent.innerHTML = typeof renderMarkdown === 'function' ? renderMarkdown(explanation) : `<pre class="whitespace-pre-wrap text-sm">${explanation}</pre>`;
+            } catch(err) {
+                ui.explanationContent.innerHTML = `<div class="text-error p-md border border-error/30 rounded-DEFAULT bg-error-container/10">Error: ${err.message}</div>`;
+            }
+        });
+    }
+
+    if (ui.btnCloseExplanation) {
+        ui.btnCloseExplanation.addEventListener('click', () => {
+            ui.explanationModal.classList.add('opacity-0');
+            setTimeout(() => ui.explanationModal.classList.add('hidden'), 200);
+        });
+    }
 }
 
 function switchTab(tab) {
@@ -525,6 +612,23 @@ async function openWorkspace() {
 }
 
 // ── PDF Rendering ──────────────────────────────────────────────────────────
+let pageObserver = null;
+
+function initObserver() {
+    if (pageObserver) pageObserver.disconnect();
+    pageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const wrapper = entry.target;
+                if (!wrapper.dataset.rendered) {
+                    wrapper.dataset.rendered = "true";
+                    lazyRenderPageContent(wrapper);
+                }
+            }
+        });
+    }, { root: ui.pdfViewport, rootMargin: '800px 0px' });
+}
+
 async function loadPdfJs() {
     ui.pdfContainer.innerHTML = '';
     state.pages = [];
@@ -542,22 +646,34 @@ async function loadPdfJs() {
     ui.pageInput.style.width = (charCount * 11 + 24) + 'px';
     if (ui.pageTotal) ui.pageTotal.textContent = `/ ${total}`;
 
+    // Fast initial placeholders
+    const page1 = await state.pdfDoc.getPage(1);
+    const viewport1 = page1.getViewport({ scale: state.scale });
+    const defaultWidth = viewport1.width;
+    const defaultHeight = viewport1.height;
+
+    initObserver();
+
     for (let i = 1; i <= total; i++) {
-        const page = await state.pdfDoc.getPage(i);
-        const wrapper = await renderPage(page, i);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pdf-page-wrapper';
+        wrapper.dataset.page = i;
+        wrapper.style.width  = defaultWidth + 'px';
+        wrapper.style.height = defaultHeight + 'px';
         ui.pdfContainer.appendChild(wrapper);
         state.pages.push(wrapper);
+        pageObserver.observe(wrapper);
     }
     updatePageIndicator();
     triggerSummarize();
 }
 
-async function renderPage(page, pageNum) {
+async function lazyRenderPageContent(wrapper) {
+    const pageNum = parseInt(wrapper.dataset.page);
+    const page = await state.pdfDoc.getPage(pageNum);
     const viewport = page.getViewport({ scale: state.scale });
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'pdf-page-wrapper';
-    wrapper.dataset.page = pageNum;
+    // Correct exact dimensions
     wrapper.style.width  = viewport.width + 'px';
     wrapper.style.height = viewport.height + 'px';
 
@@ -566,11 +682,12 @@ async function renderPage(page, pageNum) {
     canvas.width  = viewport.width;
     canvas.height = viewport.height;
     wrapper.appendChild(canvas);
-    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise.catch(e => console.warn(e));
 
     // Text layer (transparent, selectable)
     const textLayerDiv = document.createElement('div');
     textLayerDiv.className = 'textLayer';
+    textLayerDiv.style.setProperty('--scale-factor', viewport.scale);
     wrapper.appendChild(textLayerDiv);
 
     try {
@@ -602,8 +719,6 @@ async function renderPage(page, pageNum) {
             console.warn('Text layer fallback failed', e2);
         }
     }
-
-    return wrapper;
 }
 
 // ── Zoom ──────────────────────────────────────────────────────────────────
@@ -612,17 +727,34 @@ async function setZoom(newScale) {
     const pct = Math.round((state.scale / state.BASE_SCALE) * 100);
     ui.zoomLevel.textContent = pct + '%';
     if (!state.pdfDoc) return;
+    
     const scrollPct = ui.pdfViewport.scrollTop / ui.pdfViewport.scrollHeight;
     ui.pdfContainer.innerHTML = '';
     state.pages = [];
+    
     const total = state.pdfDoc.numPages;
+    const page1 = await state.pdfDoc.getPage(1);
+    const viewport1 = page1.getViewport({ scale: state.scale });
+    const defaultWidth = viewport1.width;
+    const defaultHeight = viewport1.height;
+
+    initObserver();
+
     for (let i = 1; i <= total; i++) {
-        const page = await state.pdfDoc.getPage(i);
-        const wrapper = await renderPage(page, i);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pdf-page-wrapper';
+        wrapper.dataset.page = i;
+        wrapper.style.width  = defaultWidth + 'px';
+        wrapper.style.height = defaultHeight + 'px';
         ui.pdfContainer.appendChild(wrapper);
         state.pages.push(wrapper);
+        pageObserver.observe(wrapper);
     }
-    ui.pdfViewport.scrollTop = scrollPct * ui.pdfViewport.scrollHeight;
+    
+    // Restore scroll position after DOM paints
+    setTimeout(() => {
+        ui.pdfViewport.scrollTop = scrollPct * ui.pdfViewport.scrollHeight;
+    }, 0);
 }
 
 // ── Page navigation ────────────────────────────────────────────────────────
@@ -698,12 +830,42 @@ async function triggerSummarize(force = false) {
     const endP   = visiblePages[visiblePages.length - 1];
     ui.summaryPagesBadge.textContent = startP === endP ? `Page ${startP}` : `Pages ${startP}–${endP}`;
     
-    // Check cache
-    if (!force && state.summaries[key]) {
-        ui.summaryEditor.value = state.summaries[key];
-        ui.summaryContent.innerHTML = renderSummaryContent(state.summaries[key]);
+    // Check cache: exact match or subset match
+    let targetKey = key;
+    let foundCached = false;
+    
+    if (!force) {
+        if (state.summaries[key]) {
+            foundCached = true;
+        } else {
+            // Check if visiblePages is completely covered by an existing summary
+            for (const existingKey of Object.keys(state.summaries)) {
+                const pagesInKey = existingKey.split(',').map(Number);
+                const isCovered = visiblePages.every(p => pagesInKey.includes(p));
+                if (isCovered) {
+                    targetKey = existingKey;
+                    foundCached = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (foundCached) {
+        // Update badge to reflect the actual cached summary range being shown
+        const sP = targetKey.split(',')[0];
+        const eP = targetKey.split(',').pop();
+        ui.summaryPagesBadge.textContent = sP === eP ? `Page ${sP}` : `Pages ${sP}–${eP}`;
+        
+        ui.summaryEditor.value = state.summaries[targetKey];
+        ui.summaryContent.innerHTML = renderSummaryContent(state.summaries[targetKey]);
         showSummaryState('view');
         renderLibrary();
+        return;
+    }
+
+    if (!state.autoGenerate && !force) {
+        showSummaryState('manual-prompt');
         return;
     }
 
@@ -809,6 +971,7 @@ function showSummaryState(which) {
     if (state.currentTab === 'library') return;
     ui.summaryIdle.classList.toggle('hidden', which !== 'idle');
     ui.summaryView.classList.toggle('hidden', which !== 'view');
+    if (ui.summaryManual) ui.summaryManual.classList.toggle('hidden', which !== 'manual-prompt');
     // summary-deleted needs display:flex, so toggle both hidden and flex
     ui.summaryDeleted.classList.toggle('hidden', which !== 'deleted');
     ui.summaryDeleted.classList.toggle('flex', which === 'deleted');
